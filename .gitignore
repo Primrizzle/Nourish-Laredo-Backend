@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Environment variables
+.env
+
+# OS junk
+.DS_Store
