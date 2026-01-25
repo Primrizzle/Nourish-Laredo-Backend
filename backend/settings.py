@@ -124,3 +124,14 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Email (SendGrid)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = "YOUR_SENDGRID_API_KEY"
+
+DEFAULT_FROM_EMAIL = "Nourish Laredo <noreply@nourishlaredo.org>"

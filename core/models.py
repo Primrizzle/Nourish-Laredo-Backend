@@ -6,8 +6,8 @@ class Event(models.Model):
     date = models.DateField()
     location = models.CharField(max_length=255)
 
-    image = models.ImageField(
-        upload_to="events/",
+    image = models.CharField(
+        max_length=255,
         blank=True,
         null=True
     )
@@ -21,3 +21,16 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+
+class VolunteerApplication(models.Model):
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    availability = models.CharField(max_length=255, blank=True)
+    motivation = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} ({self.email})"
+
