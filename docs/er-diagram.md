@@ -18,7 +18,7 @@ The design emphasizes:
 
 See the accompanying diagram file:
 
-**`er-diagram.png`**
+**![Entity Relationship Diagram](./er-diagram.png)**
 
 This diagram illustrates entities, their relationships, and cardinality.
 
