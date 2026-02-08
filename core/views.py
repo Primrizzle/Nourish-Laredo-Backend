@@ -3,8 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Event, VolunteerApplication
-from .serializers import EventSerializer, VolunteerApplicationSerializer
+from .models import Event, VolunteerProfile, Donation
+from .serializers import EventSerializer, VolunteerProfileSerializer, DonationSerializer
 
 @api_view(["GET"])
 def event_list(request):
@@ -14,21 +14,21 @@ def event_list(request):
 
 @api_view(["POST"])
 def volunteer_signup(request):
-    serializer = VolunteerApplicationSerializer(data=request.data)
+    serializer = VolunteerProfileSerializer(data=request.data)
 
     if serializer.is_valid():
         application = serializer.save()
 
         # 1️⃣ Email to Nourish Laredo team
         send_mail(
-            subject="New Volunteer Application Submitted",
+            subject="New Volunteer Signup",
             message=(
-                f"New volunteer application received:\n\n"
-                f"Name: {application.full_name}\n"
-                f"Email: {application.email}\n"
-                f"Phone: {application.phone}\n"
-                f"Availability: {application.availability}\n\n"
-                f"Motivation:\n{application.motivation}"
+                f"New volunteer signup received:\n\n"
+                f"Name: {profile.full_name}\n"
+                f"Email: {profile.email}\n"
+                f"Phone: {profile.phone}\n"
+                f"Availability: {profile.availability}\n\n"
+                f"Motivation:\n{profile.motivation}"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=["volunteer@nourishlaredo.com"],
@@ -39,21 +39,41 @@ def volunteer_signup(request):
         send_mail(
             subject="Thanks for volunteering with Nourish Laredo!",
             message=(
-                f"Hi {application.full_name},\n\n"
+                f"Hi {profile.full_name},\n\n"
                 "Thank you for signing up to volunteer with Nourish Laredo! "
-                "We’ve received your application and someone from our team "
+                "We’ve received your information and someone from our team "
                 "will reach out soon.\n\n"
                 "We appreciate your willingness to help our community.\n\n"
                 "— Nourish Laredo Team"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[application.email],
+            recipient_list=[profile.email],
             fail_silently=False,
         )
 
         return Response(
-            {"message": "Application submitted successfully"},
+            {"message": "Signup submitted successfully"},
             status=201
+        )
+
+    return Response(serializer.errors, status=400)
+
+@api_view(["POST"])
+def create_donation(request):
+    serializer = DonationSerializer(data=request.data)
+
+    if serializer.is_valid():
+        donation = serializer.save(
+            status="pending",
+            payment_processor="stripe",
+            processor_reference_id="pending"
+        )
+        return Response(
+            {
+                "donation_id": donation.id,
+                "status": donation.status,
+            },
+            status=201,
         )
 
     return Response(serializer.errors, status=400)
