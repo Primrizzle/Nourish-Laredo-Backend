@@ -7,10 +7,18 @@ class Event(models.Model):
     date = models.DateField()
     location = models.CharField(max_length=255)
 
-    image = models.CharField(
-        max_length=255,
-        blank=True,
+    image = models.ImageField(
+        upload_to='events/', 
+        blank=True, 
         null=True
+    )
+
+    # NEW: Link to news articles or social media posts
+    external_link = models.URLField(
+        max_length=500,
+        blank=True, 
+        null=True,
+        help_text="Link to news article (e.g., LMT Online) or Facebook post"
     )
 
     is_highlight = models.BooleanField(
@@ -146,3 +154,11 @@ class PartnerInquiry(models.Model):
 
     def __str__(self):
         return f"{self.organization_name} ({self.partnership_type})"
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True) 
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True) 
+
+    def __str__(self):
+        return self.email

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VolunteerProfile, Event, Donation, Partner, PartnerInquiry
+from .models import VolunteerProfile, Event, Donation, Partner, PartnerInquiry, NewsletterSubscriber
 
 class EventSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -41,3 +41,8 @@ class PartnerInquirySerializer(serializers.ModelSerializer):
     class Meta:
         model = PartnerInquiry
         fields = '__all__'
+
+class NewsletterSubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ['email']

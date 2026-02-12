@@ -378,3 +378,17 @@ def partner_inquiry_submit(request):
         return Response({"message": "Inquiry received and confirmation sent!"}, status=201)
     
     return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def newsletter_subscribe(request):
+    serializer = NewsletterSubscriberSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Subscribed successfully!"}, status=201)
+    
+    if 'email' in serializer.errors:
+        error_msg = str(serializer.errors['email'][0])
+        if "already exists" in error_msg:
+            return Response({"message": "You are already subscribed!"}, status=200)
+
+    return Response(serializer.errors, status=400)

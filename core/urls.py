@@ -7,6 +7,7 @@ from core.views import (
     get_partners,
     contact_submit,
     partner_inquiry_submit,
+    newsletter_subscribe,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('partners/', get_partners, name='get_partners'),
     path("contact/", contact_submit, name="contact_submit"),
     path("partners/inquiry/", partner_inquiry_submit, name="partner_inquiry"),
+    path("newsletter/subscribe/", newsletter_subscribe, name="newsletter_subscribe"),
 ]
