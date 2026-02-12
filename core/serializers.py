@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VolunteerProfile, Event, Donation
+from .models import VolunteerProfile, Event, Donation, Partner, PartnerInquiry
 
 class EventSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -24,3 +24,20 @@ class DonationSerializer(serializers.ModelSerializer):
             "processor_reference_id",
             "created_at",
         )
+
+class PartnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Partner
+        fields = ['id', 'name', 'description', 'website', 'logo']
+
+from .models import ContactMessage
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ['id', 'name', 'email', 'subject', 'message', 'created_at']
+
+class PartnerInquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartnerInquiry
+        fields = '__all__'

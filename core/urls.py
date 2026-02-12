@@ -4,6 +4,9 @@ from core.views import (
     volunteer_signup,
     stripe_webhook,
     create_checkout_session,
+    get_partners,
+    contact_submit,
+    partner_inquiry_submit,
 )
 
 urlpatterns = [
@@ -11,4 +14,7 @@ urlpatterns = [
     path("volunteer-signup/", volunteer_signup),
     path('donations/webhook/', stripe_webhook, name='stripe_webhook'),
     path("donations/checkout/", create_checkout_session),
+    path('partners/', get_partners, name='get_partners'),
+    path("contact/", contact_submit, name="contact_submit"),
+    path("partners/inquiry/", partner_inquiry_submit, name="partner_inquiry"),
 ]

@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import Event, VolunteerProfile, Person, Donation
+from .models import (
+    Event, 
+    VolunteerProfile, 
+    Person, 
+    Donation, 
+    Partner,
+    ContactMessage,
+    PartnerInquiry,
+)
 
 
 @admin.register(Event)
@@ -31,3 +39,18 @@ class DonationAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "currency", "payment_processor")
     search_fields = ("processor_reference_id",)
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'website')
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'subject', 'created_at')
+    readonly_fields = ('created_at',) # Keep the timestamp uneditable
+    search_fields = ('name', 'email', 'message')
+
+@admin.register(PartnerInquiry)
+class PartnerInquiryAdmin(admin.ModelAdmin):
+    list_display = ('organization_name', 'contact_name', 'partnership_type', 'created_at')
+    list_filter = ('partnership_type',)

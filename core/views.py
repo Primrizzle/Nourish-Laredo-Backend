@@ -8,9 +8,10 @@ from django.views.decorators.http import require_POST
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status  
 
-from .models import Event, VolunteerProfile, Donation, Person
-from .serializers import EventSerializer, VolunteerProfileSerializer
+from .models import *
+from .serializers import *
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -24,22 +25,37 @@ def event_list(request):
     serializer = EventSerializer(events, many=True)
     return Response(serializer.data)
 
-@api_view(["POST"])
+# core/views.py
+
+@api_view(['POST'])
 def volunteer_signup(request):
     serializer = VolunteerProfileSerializer(data=request.data)
     if serializer.is_valid():
-        profile = serializer.save()
-        # (Keeping your existing email logic here)
-        send_mail(
-            subject="New Volunteer Signup",
-            message=f"New volunteer: {profile.full_name}\nEmail: {profile.email}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=["volunteer@nourishlaredo.com"],
-            fail_silently=True,
-        )
-        return Response({"message": "Signup submitted successfully"}, status=201)
-    return Response(serializer.errors, status=400)
+        volunteer = serializer.save()
 
+        # 1. Email to ADMIN
+        # CHANGED: volunteer.message -> volunteer.motivation
+        send_mail(
+            "New Volunteer Signup",
+            f"New volunteer: {volunteer.full_name}\n"
+            f"Email: {volunteer.email}\n"
+            f"Phone: {volunteer.phone}\n"
+            f"Motivation: {volunteer.motivation}", 
+            "noreply@nourishlaredo.org",
+            ["volunteer@nourishlaredo.com"],
+        )
+
+        # 2. Email to VOLUNTEER
+        send_mail(
+            "Welcome to Nourish Laredo!",
+            f"Hi {volunteer.full_name},\n\n"
+            f"Thank you for signing up to volunteer with us! We've received your application and will be in touch soon.",
+            "noreply@nourishlaredo.org",
+            [volunteer.email],
+        )
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ========================
 # STRIPE CHECKOUT SESSION
@@ -244,3 +260,121 @@ def get_or_create_person(email, name):
         },
     )
     return person
+
+@api_view(['GET'])
+def get_partners(request):
+    partners = Partner.objects.all().order_by('name') # Newest first
+    serializer = PartnerSerializer(partners, many=True)
+    return Response(serializer.data)
+
+# core/views.py
+
+@api_view(["POST"])
+def contact_submit(request):
+    """
+    Handles Contact Us form submissions.
+    1. Saves the message to the database.
+    2. Emails the Admin with the details.
+    3. Emails the User a nice confirmation receipt.
+    """
+    serializer = ContactMessageSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        contact = serializer.save()
+
+        # ==========================
+        # 1. NOTIFY ADMIN (You)
+        # ==========================
+        send_mail(
+            subject=f"New Contact: {contact.subject or 'General Inquiry'}",
+            message=(
+                f"You received a new message from the website:\n\n"
+                f"Name: {contact.name}\n"
+                f"Email: {contact.email}\n"
+                f"Subject: {contact.subject}\n\n"
+                f"Message:\n{contact.message}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["info@nourishlaredo.com"], # Your real admin email
+            fail_silently=True,
+        )
+
+        # ==========================
+        # 2. AUTO-REPLY TO USER (Them)
+        # ==========================
+        user_subject = "We've received your message! - Nourish Laredo"
+        user_message = (
+            f"Hi {contact.name},\n\n"
+            f"Thank you for reaching out to Nourish Laredo! We have received your message regarding '{contact.subject}' and our team is reviewing it.\n\n"
+            f"We are a small but passionate team, so please allow us 24-48 hours to get back to you. \n\n"
+            f"In the meantime, feel free to check our Events page for upcoming volunteer opportunities.\n\n"
+            f"With gratitude,\n"
+            f"The Nourish Laredo Team\n"
+            f"www.nourishlaredo.org"
+        )
+
+        send_mail(
+            subject=user_subject,
+            message=user_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[contact.email], # Sends to the user who filled the form
+            fail_silently=True,
+        )
+
+        return Response({"message": "Message sent and confirmation emailed!"}, status=201)
+
+    return Response(serializer.errors, status=400)
+
+# core/views.py
+
+@api_view(["POST"])
+def partner_inquiry_submit(request):
+    serializer = PartnerInquirySerializer(data=request.data)
+    if serializer.is_valid():
+        inquiry = serializer.save()
+        
+        # ==========================
+        # 1. NOTIFY ADMIN (You)
+        # ==========================
+        send_mail(
+            subject=f"New Partner Inquiry: {inquiry.organization_name}",
+            message=(
+                f"Organization: {inquiry.organization_name}\n"
+                f"Contact: {inquiry.contact_name}\n"
+                f"Email: {inquiry.email}\n"
+                f"Phone: {inquiry.phone}\n"
+                f"Website: {inquiry.website}\n"
+                f"Type: {inquiry.get_partnership_type_display()}\n\n"
+                f"Message:\n{inquiry.message}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["partners@nourishlaredo.com"], # Your admin email
+            fail_silently=True,
+        )
+
+        # ==========================
+        # 2. AUTO-REPLY TO PARTNER (Them)
+        # ==========================
+        user_subject = "Thank you for your interest in partnering with Nourish Laredo"
+        user_message = (
+            f"Hi {inquiry.contact_name},\n\n"
+            f"Thank you for reaching out on behalf of {inquiry.organization_name}! "
+            f"We are thrilled that you are interested in joining our mission through {inquiry.get_partnership_type_display().lower()}.\n\n"
+            f"Our partnership team is reviewing your inquiry and will be in touch shortly to discuss next steps.\n\n"
+            f"Together, we can make a lasting impact on our community.\n\n"
+            f"Warmly,\n"
+            f"The Nourish Laredo Team\n"
+            f"www.nourishlaredo.com"
+        )
+
+        send_mail(
+            subject=user_subject,
+            message=user_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[inquiry.email], # Sends to the partner
+            fail_silently=True,
+        )
+
+        return Response({"message": "Inquiry received and confirmation sent!"}, status=201)
+    
+    return Response(serializer.errors, status=400)

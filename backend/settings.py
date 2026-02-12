@@ -142,3 +142,6 @@ EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = "YOUR_SENDGRID_API_KEY"
 
 DEFAULT_FROM_EMAIL = "Nourish Laredo <noreply@nourishlaredo.org>"
+
+# specific configuration to print emails to the terminal
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
