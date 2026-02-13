@@ -13,6 +13,9 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 
+from django.http import JsonResponse
+import cloudinary.api
+
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -392,3 +395,18 @@ def newsletter_subscribe(request):
             return Response({"message": "You are already subscribed!"}, status=200)
 
     return Response(serializer.errors, status=400)
+
+def test_cloudinary_connection(request):
+    try:
+        # The ping() method verifies if your credentials are valid
+        response = cloudinary.api.ping()
+        return JsonResponse({
+            "status": "Success",
+            "message": "Django is successfully talking to Cloudinary!",
+            "response": response
+        })
+    except Exception as e:
+        return JsonResponse({
+            "status": "Error",
+            "message": str(e)
+        }, status=500)
