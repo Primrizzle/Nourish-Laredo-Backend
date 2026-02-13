@@ -91,13 +91,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Cloudinary Configuration
-cloudinary.config( 
-  cloud_name = config('CLOUDINARY_CLOUD_NAME', default=''),
-  api_key = config('CLOUDINARY_API_KEY', default=''), 
-  api_secret = config('CLOUDINARY_API_SECRET', default=''),
-  secure = True
-)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+}
 
 # --- DEFAULT STORAGE ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
