@@ -48,7 +48,6 @@ MIDDLEWARE = [
 ]
 
 # --- CORS ---
-# In production, we'll want to specify your Vercel URL here
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
 # --- STRIPE & EMAIL ---
@@ -75,7 +74,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [], # You can add [BASE_DIR / 'templates'] if you have a templates folder
+        'DIRS': [],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,14 +90,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# django-cloudinary-storage will automatically use CLOUDINARY_URL from environment
+# --- CLOUDINARY CONFIGURATION ---
+cloudinary_url = config('CLOUDINARY_URL', default='')
+if cloudinary_url:
+    os.environ['CLOUDINARY_URL'] = cloudinary_url
+    cloudinary.config() 
+
+# django-cloudinary-storage configuration
 CLOUDINARY_STORAGE = {
-    'CLOUDINARY_URL': config('CLOUDINARY_URL', default='')
+    'CLOUDINARY_URL': cloudinary_url
 }
 
-# Also configure cloudinary library directly from URL
-if config('CLOUDINARY_URL', default=''):
-    cloudinary.config()  # Automatically reads from CLOUDINARY_URL env var
-    
 # --- DEFAULT STORAGE ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
