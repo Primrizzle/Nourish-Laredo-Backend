@@ -418,3 +418,22 @@ def debug_env(request):
         'has_cloudinary_url': 'CLOUDINARY_URL' in os.environ,
         'cloudinary_url_length': len(os.environ.get('CLOUDINARY_URL', ''))
     })
+
+@api_view(['GET'])
+def debug_env(request):
+    import os
+    from decouple import config
+    import cloudinary
+    
+    cloudinary_url_from_env = os.environ.get('CLOUDINARY_URL', '')
+    cloudinary_url_from_config = config('CLOUDINARY_URL', default='')
+    
+    return Response({
+        'env_has_it': bool(cloudinary_url_from_env),
+        'config_has_it': bool(cloudinary_url_from_config),
+        'env_starts_with': cloudinary_url_from_env[:20] if cloudinary_url_from_env else '',
+        'config_starts_with': cloudinary_url_from_config[:20] if cloudinary_url_from_config else '',
+        'cloudinary_config_cloud_name': cloudinary.config().cloud_name,
+        'cloudinary_config_api_key': cloudinary.config().api_key,
+        'cloudinary_config_has_secret': bool(cloudinary.config().api_secret)
+    })
