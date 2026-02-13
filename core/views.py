@@ -410,3 +410,11 @@ def test_cloudinary_connection(request):
             "status": "Error",
             "message": str(e)
         }, status=500)
+
+@api_view(['GET'])
+def debug_env(request):
+    import os
+    return Response({
+        'has_cloudinary_url': 'CLOUDINARY_URL' in os.environ,
+        'cloudinary_url_length': len(os.environ.get('CLOUDINARY_URL', ''))
+    })
