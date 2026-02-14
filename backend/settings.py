@@ -98,10 +98,6 @@ cloudinary.config(
     api_secret=config('CLOUDINARY_API_SECRET', default=''),
     secure=True
 )
-# django-cloudinary-storage configuration
-CLOUDINARY_STORAGE = {
-    'CLOUDINARY_URL': cloudinary_url
-}
 
 # --- DEFAULT STORAGE ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
