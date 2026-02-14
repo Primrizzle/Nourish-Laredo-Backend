@@ -2,7 +2,6 @@ from pathlib import Path
 import os
 import dj_database_url
 from decouple import config
-import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,8 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
-    'cloudinary_storage',
-    'cloudinary',
+    'storages',  # For R2 storage
 ]
 
 MIDDLEWARE = [
@@ -62,14 +60,29 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="noreply@nourishlaredo.com")
 EMAIL_HOST_PASSWORD = config("GMAIL_APP_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="Nourish Laredo <noreply@nourishlaredo.com>")
 
-# --- STATIC & MEDIA ---
+# --- STATIC FILES ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# --- R2 / S3 STORAGE CONFIGURATION ---
+AWS_ACCESS_KEY_ID = config('R2_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = config('R2_SECRET_ACCESS_KEY', default='')
+AWS_STORAGE_BUCKET_NAME = config('R2_BUCKET_NAME', default='nourish-laredo-media')
+AWS_S3_ENDPOINT_URL = config('R2_ENDPOINT_URL', default='https://aba2d6c57ec76df26852d0ef6f1663d3.r2.cloudflarestorage.com')
+AWS_S3_REGION_NAME = 'auto'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_CUSTOM_DOMAIN = config('R2_PUBLIC_DOMAIN', default='pub-f7c6fa5473a54529a599f8d17b6880d8.r2.dev')
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
 
+# Storage backend
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# --- DJANGO CONFIG ---
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -90,14 +103,3 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# --- CLOUDINARY CONFIGURATION ---
-cloudinary.config(
-    cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
-    api_key=config('CLOUDINARY_API_KEY', default=''),
-    api_secret=config('CLOUDINARY_API_SECRET', default=''),
-    secure=True
-)
-
-# --- DEFAULT STORAGE ---
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
