@@ -414,8 +414,17 @@ def test_cloudinary_connection(request):
 @api_view(['GET'])
 def debug_env(request):
     import os
+    import cloudinary
     return Response({
         'has_cloudinary_url': 'CLOUDINARY_URL' in os.environ,
-        'cloudinary_url_length': len(os.environ.get('CLOUDINARY_URL', ''))
+        'cloudinary_url_length': len(os.environ.get('CLOUDINARY_URL', '')),
+        'has_cloud_name': 'CLOUDINARY_CLOUD_NAME' in os.environ,
+        'has_api_key': 'CLOUDINARY_API_KEY' in os.environ,
+        'has_api_secret': 'CLOUDINARY_API_SECRET' in os.environ,
+        'cloud_name_value': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT SET'),
+        'api_key_value': os.environ.get('CLOUDINARY_API_KEY', 'NOT SET'),
+        'api_secret_length': len(os.environ.get('CLOUDINARY_API_SECRET', '')),
+        'cloudinary_config_cloud_name': cloudinary.config().cloud_name,
+        'cloudinary_config_api_key': cloudinary.config().api_key,
     })
 
