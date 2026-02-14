@@ -92,11 +92,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- CLOUDINARY CONFIGURATION ---
-cloudinary_url = config('CLOUDINARY_URL', default='')
-if cloudinary_url:
-    os.environ['CLOUDINARY_URL'] = cloudinary_url
-    cloudinary.config() 
-
+cloudinary.config(
+    cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+    api_key=config('CLOUDINARY_API_KEY', default=''),
+    api_secret=config('CLOUDINARY_API_SECRET', default=''),
+    secure=True
+)
 # django-cloudinary-storage configuration
 CLOUDINARY_STORAGE = {
     'CLOUDINARY_URL': cloudinary_url
