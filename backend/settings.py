@@ -48,7 +48,8 @@ MIDDLEWARE = [
 ]
 
 # --- CORS ---
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',') if config('CORS_ALLOWED_ORIGINS', default='') else []
 
 # --- STRIPE & EMAIL ---
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
