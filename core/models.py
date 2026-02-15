@@ -12,7 +12,7 @@ class Event(models.Model):
         upload_to='events/', 
         blank=True, 
         null=True,
-        storage=S3Boto3Storage()
+        storage=S3Boto3Storage(),
     )
 
     # NEW: Link to news articles or social media posts
