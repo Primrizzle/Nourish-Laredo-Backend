@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from storages.backends.s3boto3 import S3Boto3Storage
 
 class Event(models.Model):
     title = models.CharField(max_length=255)
@@ -10,7 +11,7 @@ class Event(models.Model):
     image = models.ImageField(
         upload_to='events/', 
         blank=True, 
-        null=True
+        null=True,
         storage=S3Boto3Storage()
     )
 
