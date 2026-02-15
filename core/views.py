@@ -232,3 +232,17 @@ def test_cloudinary_connection(request):
         return JsonResponse({"status": "Success", "response": response})
     except Exception as e:
         return JsonResponse({"status": "Error", "message": str(e)}, status=500)
+
+# Add this to the end of core/views.py
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def debug_env(request):
+    import os
+    import cloudinary
+    return Response({
+        'has_cloudinary_url': 'CLOUDINARY_URL' in os.environ,
+        'has_cloud_name': 'CLOUDINARY_CLOUD_NAME' in os.environ,
+        'cloud_name_value': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT SET'),
+        'cloudinary_config_cloud_name': cloudinary.config().cloud_name,
+    })
