@@ -11,6 +11,7 @@ class Event(models.Model):
         upload_to='events/', 
         blank=True, 
         null=True
+        storage=S3Boto3Storage()
     )
 
     # NEW: Link to news articles or social media posts
@@ -118,7 +119,7 @@ class Partner(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     website = models.URLField(blank=True, null=True)
-    logo = models.ImageField(upload_to='partners/', blank=True, null=True)
+    logo = models.ImageField(upload_to='partners/', blank=True, null=True, storage=S3Boto3Storage())
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
