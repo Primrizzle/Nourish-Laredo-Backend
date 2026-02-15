@@ -65,16 +65,14 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# --- R2 / S3 STORAGE CONFIGURATION ---
-AWS_ACCESS_KEY_ID = config('R2_ACCESS_KEY_ID', default='')
-AWS_SECRET_ACCESS_KEY = config('R2_SECRET_ACCESS_KEY', default='')
-AWS_STORAGE_BUCKET_NAME = config('R2_BUCKET_NAME', default='nourish-laredo-media')
-AWS_S3_ENDPOINT_URL = config('R2_ENDPOINT_URL', default='https://aba2d6c57ec76df26852d0ef6f1663d3.r2.cloudflarestorage.com')
-AWS_S3_REGION_NAME = 'auto'
+# --- AWS S3 STORAGE CONFIGURATION ---
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='nourish-laredo-media')
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')  # Change this to your bucket's region
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_CUSTOM_DOMAIN = config('R2_PUBLIC_DOMAIN', default='pub-f7c6fa5473a54529a599f8d17b6880d8.r2.dev')
+AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
