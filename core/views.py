@@ -222,18 +222,18 @@ def partner_inquiry_submit(request):
 def newsletter_subscribe(request):
     serializer = NewsletterSubscriberSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        subscriber = serializer.save() 
+        
+        # Send confirmation email
+        send_mail(
+            "You're Subscribed! - Nourish Laredo",
+            "Hi there!\n\nThank you for subscribing to the Nourish Laredo newsletter. We'll keep you updated on our community impact.",
+            settings.DEFAULT_FROM_EMAIL,
+            [subscriber.email],
+            fail_silently=False,
+        )
         return Response({"message": "Subscribed!"}, status=201)
     return Response(serializer.errors, status=400)
-
-def test_cloudinary_connection(request):
-    try:
-        response = cloudinary.api.ping()
-        return JsonResponse({"status": "Success", "response": response})
-    except Exception as e:
-        return JsonResponse({"status": "Error", "message": str(e)}, status=500)
-
-# Add this to the end of core/views.py
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -246,3 +246,4 @@ def debug_env(request):
         'cloud_name_value': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT SET'),
         'cloudinary_config_cloud_name': cloudinary.config().cloud_name,
     })
+
