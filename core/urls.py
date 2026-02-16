@@ -8,9 +8,7 @@ from core.views import (
     contact_submit,
     partner_inquiry_submit,
     newsletter_subscribe,
-    test_cloudinary_connection,
-    debug_env,
-    )
+)
 
 urlpatterns = [
     path("events/", event_list, name="event-list"),
@@ -21,6 +19,4 @@ urlpatterns = [
     path("contact/", contact_submit, name="contact_submit"),
     path("partners/inquiry/", partner_inquiry_submit, name="partner_inquiry"),
     path("newsletter/subscribe/", newsletter_subscribe, name="newsletter_subscribe"),
-    path('test-cloudinary/', test_cloudinary_connection, name='test_cloudinary'),
-    path('debug-env/', debug_env, name='debug_env'),
 ]
